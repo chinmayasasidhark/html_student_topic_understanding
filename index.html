@@ -849,6 +849,98 @@
             }
         }
 
+        /* ── Topics Panel ── */
+        .topics-panel {
+            margin-bottom: 18px;
+            padding: 16px 18px;
+            border: 1px solid #e9edf2;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f8fafc 0%, #fefefe 100%);
+        }
+        .topics-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .topics-panel-header h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .topics-panel-header p {
+            color: #64748b;
+            font-size: 13px;
+        }
+        .topics-status {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+        .topics-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        }
+        .chapter-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+        }
+        .chapter-card .chapter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .chapter-card.active {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.16);
+            background: #f8fbff;
+        }
+        .chapter-card .chapter-header strong {
+            font-size: 13px;
+            color: #0f172a;
+        }
+        .chapter-card .chapter-count {
+            font-size: 11px;
+            color: #64748b;
+            background: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        .chapter-card ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin: 0;
+            padding: 0;
+        }
+        .chapter-card li {
+            font-size: 12px;
+            color: #334155;
+            padding-left: 12px;
+            position: relative;
+        }
+        .chapter-card li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+        }
+        .topics-empty {
+            padding: 14px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            text-align: center;
+            color: #64748b;
+            background: #fff;
+        }
+
         /* ── Misc ── */
         .hidden {
             display: none !important;
@@ -945,11 +1037,23 @@
                 </div>
             </div>
             <div class="group" style="margin-left:auto;">
+                <button class="btn btn-primary btn-sm" id="fetchTopicsBtn" onclick="fetchTopics()">🔄 Fetch Topics</button>
                 <button class="btn btn-outline btn-sm" onclick="showTopicStats()">📊 Topic Stats</button>
                 <button class="btn btn-outline btn-sm" onclick="showClassStats()">🏫 Class Stats</button>
-                <button class="btn btn-outline btn-sm" id="undoBtn" onclick="undoDelete()" style="display:none;color:#16a34a;border-color:#86efac;">↩️ Undo Delete</button>
-                <button class="btn btn-outline btn-sm" onclick="clearAllProgress()" style="color:#dc2626;border-color:#fca5a5;">🗑️ Clear Progress</button>
+                <button class="btn btn-outline btn-sm" onclick="saveData(); showToast('Saved successfully', 'success');">💾 Save</button>
             </div>
+        </div>
+
+        <div class="topics-panel" id="topicsPanel">
+            <div class="topics-panel-header">
+                <div>
+                    <h3>📚 Topics from API</h3>
+                    <p id="topicsSourceLabel">Grade 10 · Math</p>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="fetchTopics()">🔄 Fetch Topics</button>
+            </div>
+            <div class="topics-status" id="topicsStatus">No topics loaded yet. Fetch the latest syllabus data to begin.</div>
+            <div class="topics-grid" id="topicsContent"></div>
         </div>
 
         <!-- ─── STATS ─── -->
@@ -964,6 +1068,11 @@
         <!-- ─── GRID ─── -->
         <div class="grid-wrap" id="gridWrap">
             <div id="gridContainer"></div>
+        </div>
+
+        <div class="toolbar" id="bottomActions" style="margin-top:14px;justify-content:flex-end;">
+            <button class="btn btn-outline btn-sm" onclick="clearAllProgress()" style="color:#dc2626;border-color:#fca5a5;">🗑️ Reset All</button>
+            <button class="btn btn-outline btn-sm" id="bottomUndoBtn" onclick="undoDelete()" style="display:none;color:#16a34a;border-color:#86efac;">↩️ Undo</button>
         </div>
 
         <!-- ─── SETTINGS PANEL ─── -->
@@ -1023,85 +1132,336 @@
 
         const STORAGE_KEY = 'studentProgressData';
         const CONFIG_KEY = 'supabaseConfig';
-
-        // Hardcoded CBSE topics (42 topics across subjects)
-        const DEFAULT_TOPICS = [
-            // Mathematics
-            { id: 'm1', name: 'Number Systems', subject: 'Math' },
-            { id: 'm2', name: 'Algebra', subject: 'Math' },
-            { id: 'm3', name: 'Polynomials', subject: 'Math' },
-            { id: 'm4', name: 'Linear Equations', subject: 'Math' },
-            { id: 'm5', name: 'Quadratic Equations', subject: 'Math' },
-            { id: 'm6', name: 'Coordinate Geometry', subject: 'Math' },
-            { id: 'm7', name: 'Geometry', subject: 'Math' },
-            { id: 'm8', name: 'Trigonometry', subject: 'Math' },
-            { id: 'm9', name: 'Mensuration', subject: 'Math' },
-            { id: 'm10', name: 'Statistics', subject: 'Math' },
-            { id: 'm11', name: 'Probability', subject: 'Math' },
-            { id: 'm12', name: 'Calculus', subject: 'Math' },
-            { id: 'm13', name: 'Vectors & Matrices', subject: 'Math' },
-            // Science
-            { id: 's1', name: 'Matter & Properties', subject: 'Science' },
-            { id: 's2', name: 'Atoms & Molecules', subject: 'Science' },
-            { id: 's3', name: 'Chemical Reactions', subject: 'Science' },
-            { id: 's4', name: 'Acids, Bases & Salts', subject: 'Science' },
-            { id: 's5', name: 'Metals & Non-metals', subject: 'Science' },
-            { id: 's6', name: 'Carbon & Compounds', subject: 'Science' },
-            { id: 's7', name: 'Periodic Table', subject: 'Science' },
-            { id: 's8', name: 'Motion & Forces', subject: 'Science' },
-            { id: 's9', name: 'Work, Energy & Power', subject: 'Science' },
-            { id: 's10', name: 'Sound & Light', subject: 'Science' },
-            { id: 's11', name: 'Electricity & Magnetism', subject: 'Science' },
-            { id: 's12', name: 'Cell Biology', subject: 'Science' },
-            { id: 's13', name: 'Tissues & Organs', subject: 'Science' },
-            { id: 's14', name: 'Human Body Systems', subject: 'Science' },
-            { id: 's15', name: 'Plant Biology', subject: 'Science' },
-            { id: 's16', name: 'Ecosystems & Environment', subject: 'Science' },
-            // English
-            { id: 'e1', name: 'Grammar & Syntax', subject: 'English' },
-            { id: 'e2', name: 'Vocabulary', subject: 'English' },
-            { id: 'e3', name: 'Reading Comprehension', subject: 'English' },
-            { id: 'e4', name: 'Writing Skills', subject: 'English' },
-            { id: 'e5', name: 'Literature Analysis', subject: 'English' },
-            { id: 'e6', name: 'Poetry Appreciation', subject: 'English' },
-            { id: 'e7', name: 'Drama & Plays', subject: 'English' },
-            // Social Studies
-            { id: 'h1', name: 'History', subject: 'Social Studies' },
-            { id: 'h2', name: 'Geography', subject: 'Social Studies' },
-            { id: 'h3', name: 'Civics & Political Science', subject: 'Social Studies' },
-            { id: 'h4', name: 'Economics', subject: 'Social Studies' },
-        ];
+        const GRADE = '10';
+        const SUBJECT = 'math';
+        const SUBJECT_LABEL = SUBJECT.charAt(0).toUpperCase() + SUBJECT.slice(1);
+        const TOPICS_STORAGE_KEY = `topics_${GRADE}_${SUBJECT}`;
+        const TOPICS_API_URL = `https://staticapis.pragament.com/lms/cbse/${GRADE}/${SUBJECT}/topics.json`;
 
         let state = {
             students: [], // [{id, admissionNumber, class, section, name, progress: {topicId: 'understood'|'needs-help'}}]
             topics: [],
+            topicGroups: [],
         };
 
         let lastDeletedStudent = null;
         let selectedTopicIds = new Set();
+        let chapterExpansionState = {};
+        let lastChapterAction = null;
+        let lastGlobalAction = null;
+        let selectedChapterKey = null;
+
+        // ─── Topic loading / storage ───
+
+        function getTopicPayload(payload) {
+            if (Array.isArray(payload)) return payload;
+            if (Array.isArray(payload?.topics)) return payload.topics;
+            if (Array.isArray(payload?.data)) return payload.data;
+            return [];
+        }
+
+        function buildTopicGroups(rawTopics) {
+            const items = getTopicPayload(rawTopics);
+            const grouped = [];
+            const chapterMap = new Map();
+
+            for (const item of items) {
+                const chapterNumber = item?.chapterNumber ?? 0;
+                const chapterName = item?.chapterName || 'Untitled Chapter';
+                const subtopic = item?.subtopic || item?.name || 'Untitled Subtopic';
+                const chapterKey = `${chapterNumber}-${chapterName}`;
+
+                if (!chapterMap.has(chapterKey)) {
+                    const group = {
+                        chapterNumber,
+                        chapterName,
+                        subtopics: [],
+                    };
+                    chapterMap.set(chapterKey, group);
+                    grouped.push(group);
+                }
+
+                const group = chapterMap.get(chapterKey);
+                const topicId = `${chapterNumber}-${chapterName}-${subtopic}`.toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-|-$/g, '');
+                group.subtopics.push({
+                    id: topicId,
+                    name: subtopic,
+                    subject: SUBJECT_LABEL,
+                    chapterNumber,
+                    chapterName,
+                });
+            }
+
+            return grouped;
+        }
+
+        function normalizeTopics(rawTopics) {
+            const grouped = buildTopicGroups(rawTopics);
+            const topics = grouped.flatMap(group => group.subtopics);
+            return { grouped, topics };
+        }
+
+        function isApiTopicPayload(payload) {
+            if (!Array.isArray(payload)) return false;
+            return payload.some(item => item && (item.chapterNumber !== undefined || item.chapterName || item.subtopic));
+        }
+
+        function saveToLocalStorage(payload) {
+            localStorage.setItem(TOPICS_STORAGE_KEY, JSON.stringify(payload));
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const raw = localStorage.getItem(TOPICS_STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (_) {
+                return null;
+            }
+        }
+
+        async function fetchTopics() {
+            const button = document.getElementById('fetchTopicsBtn');
+            if (button) {
+                button.disabled = true;
+                button.textContent = '⏳ Fetching...';
+            }
+
+            try {
+                const response = await fetch(TOPICS_API_URL);
+                if (!response.ok) throw new Error(`Request failed with ${response.status}`);
+                const payload = await response.json();
+                saveToLocalStorage(payload);
+                applyTopics(payload);
+                showToast('Topics fetched successfully', 'success');
+            } catch (error) {
+                console.error('Error fetching topics', error);
+                showToast('Unable to fetch topics right now', 'error');
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = '🔄 Fetch Topics';
+                }
+            }
+        }
+
+        function applyTopics(payload) {
+            const { grouped, topics } = normalizeTopics(payload);
+            state.topics = topics;
+            state.topicGroups = grouped;
+            ensureAllProgress();
+
+            const validSelection = new Set([...selectedTopicIds].filter(id => state.topics.some(t => t.id === id)));
+            selectedTopicIds = validSelection.size > 0 ? validSelection : new Set(state.topics.map(t => t.id));
+
+            renderTopics();
+            renderGrid();
+            populateFilters();
+            updateStats();
+        }
+
+        function getChapterKey(group) {
+            return `${group.chapterNumber || 0}-${group.chapterName || 'Untitled'}`;
+        }
+
+        function getVisibleTopics() {
+            if (!selectedChapterKey) return state.topics;
+            const chapter = state.topicGroups.find(group => getChapterKey(group) === selectedChapterKey);
+            return chapter ? chapter.subtopics : [];
+        }
+
+        function getVisibleTopicIds() {
+            return getVisibleTopics().map(topic => topic.id);
+        }
+
+        function selectChapter(chapterKey) {
+            selectedChapterKey = selectedChapterKey === chapterKey ? null : chapterKey;
+            if (selectedChapterKey) {
+                chapterExpansionState[chapterKey] = true;
+            }
+            renderTopics();
+            renderGrid();
+        }
+
+        function getChapterByKey(chapterKey) {
+            return state.topicGroups.find(group => getChapterKey(group) === chapterKey) || null;
+        }
+
+        function getChapterProgress(group) {
+            const topicIds = (group.subtopics || []).map(t => t.id);
+            let understood = 0;
+            let needsHelp = 0;
+            let notSet = 0;
+            for (const student of state.students) {
+                for (const topicId of topicIds) {
+                    const val = student.progress?.[topicId];
+                    if (val === 'understood') understood++;
+                    else if (val === 'needs-help') needsHelp++;
+                    else notSet++;
+                }
+            }
+            const totalEntries = state.students.length * topicIds.length;
+            return { understood, needsHelp, notSet, totalEntries };
+        }
+
+        function toggleChapter(chapterKey) {
+            chapterExpansionState[chapterKey] = !chapterExpansionState[chapterKey];
+            renderTopics();
+        }
+
+        function toggleChapterSelection(chapterKey) {
+            selectChapter(chapterKey);
+            if (selectedChapterKey) {
+                chapterExpansionState[chapterKey] = true;
+            }
+            renderTopics();
+            renderGrid();
+        }
+
+        function createProgressSnapshot() {
+            return state.students.map(student => ({
+                ...student,
+                progress: student.progress ? { ...student.progress } : {},
+            }));
+        }
+
+        function applyChapterStatus(chapterKey, status) {
+            const group = getChapterByKey(chapterKey);
+            if (!group) return;
+            const snapshot = createProgressSnapshot();
+            const topicIds = (group.subtopics || []).map(t => t.id);
+            for (const student of state.students) {
+                if (!student.progress) student.progress = {};
+                for (const topicId of topicIds) {
+                    if (status === 'clear') {
+                        student.progress[topicId] = null;
+                    } else {
+                        student.progress[topicId] = status;
+                    }
+                }
+            }
+            lastChapterAction = { snapshot, chapterKey };
+            saveData();
+            showToast(`Chapter updated: ${group.chapterName}`, 'success');
+        }
+
+        function resetChapter(chapterKey) {
+            applyChapterStatus(chapterKey, 'clear');
+        }
+
+        function undoChapterAction() {
+            if (!lastChapterAction) {
+                showToast('No chapter action to undo', 'warning');
+                return;
+            }
+            state.students = lastChapterAction.snapshot.map(student => ({
+                ...student,
+                progress: student.progress ? { ...student.progress } : {},
+            }));
+            lastChapterAction = null;
+            saveData();
+            showToast('Chapter action undone', 'success');
+        }
+
+        function renderTopics() {
+            const container = document.getElementById('topicsContent');
+            const statusEl = document.getElementById('topicsStatus');
+            const sourceEl = document.getElementById('topicsSourceLabel');
+            if (!container || !statusEl || !sourceEl) return;
+
+            const groups = state.topicGroups.length > 0
+                ? state.topicGroups
+                : (state.topics.length > 0 ? [{ chapterNumber: 0, chapterName: 'Topics', subtopics: state.topics }] : []);
+
+            sourceEl.textContent = `Grade ${GRADE} · ${SUBJECT_LABEL}`;
+
+            if (!groups.length) {
+                container.innerHTML = `
+                    <div class="topics-empty">
+                        <strong>No topics loaded yet</strong>
+                        <div>Fetch the latest syllabus data to populate the chapter and subtopic list.</div>
+                    </div>
+                `;
+                statusEl.textContent = 'No topics loaded yet. Fetch the latest syllabus data to begin.';
+                return;
+            }
+
+            container.innerHTML = groups.map(group => {
+                const chapterKey = getChapterKey(group);
+                const isExpanded = chapterExpansionState[chapterKey] !== false;
+                const progress = getChapterProgress(group);
+                const percent = progress.totalEntries > 0
+                    ? Math.round(((progress.understood + progress.needsHelp) / progress.totalEntries) * 100)
+                    : 0;
+                return `
+                    <div class="chapter-card ${selectedChapterKey === chapterKey ? 'active' : ''}">
+                        <div class="chapter-header" style="cursor:pointer;" onclick="toggleChapterSelection('${chapterKey}')">
+                            <div>
+                                <strong>Chapter ${group.chapterNumber}: ${group.chapterName}</strong>
+                                <div style="font-size:11px;color:#64748b;margin-top:4px;">${group.subtopics.length} subtopics • ${state.students.length} students</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="chapter-count">${group.subtopics.length} topics</span>
+                                <button class="btn btn-outline btn-sm" style="padding:3px 8px;" onclick="event.stopPropagation(); toggleChapter('${chapterKey}')">${isExpanded ? '▾' : '▸'}</button>
+                            </div>
+                        </div>
+                        <div style="margin-top:8px;padding:6px 0 0;">
+                            <div style="height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;">
+                                <div style="height:100%;background:#2563eb;width:${percent}%;"></div>
+                            </div>
+                            <div style="font-size:11px;color:#64748b;margin-top:4px;">${progress.understood} understood • ${progress.needsHelp} needs help • ${progress.notSet} not set</div>
+                        </div>
+                        ${isExpanded ? `
+                            <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;">
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); applyChapterStatus('${chapterKey}', 'understood')">High All</button>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); applyChapterStatus('${chapterKey}', 'needs-help')">Mid All</button>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); applyChapterStatus('${chapterKey}', 'clear')">Low All</button>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); applyChapterStatus('${chapterKey}', 'clear')">Clear All</button>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); resetChapter('${chapterKey}')">Reset Chapter</button>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); undoChapterAction()">Undo Chapter</button>
+                            </div>
+                            <ul style="margin-top:10px;">
+                                ${group.subtopics.map(subtopic => `<li>${subtopic.name}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            statusEl.textContent = `Showing ${groups.length} chapter${groups.length === 1 ? '' : 's'} from browser storage.`;
+        }
 
         // ─── Load / Save ───
 
         function loadData() {
             const raw = localStorage.getItem(STORAGE_KEY);
+            let parsed = null;
             if (raw) {
                 try {
-                    const parsed = JSON.parse(raw);
-                    state.students = parsed.students || [];
-                    state.topics = parsed.topics || DEFAULT_TOPICS;
-                    // ensure all topics exist
-                    mergeTopics();
-                    // ensure all students have progress for all topics
-                    ensureAllProgress();
-                    return;
+                    parsed = JSON.parse(raw);
                 } catch (_) { /* fall through */ }
             }
-            state.topics = [...DEFAULT_TOPICS];
-            state.students = [];
-            saveData();
+
+            state.students = parsed?.students || [];
+            state.topics = [];
+            state.topicGroups = [];
+
+            const cachedTopics = loadFromLocalStorage();
+            if (cachedTopics) {
+                applyTopics(cachedTopics);
+            } else {
+                ensureAllProgress();
+                renderTopics();
+                renderGrid();
+                populateFilters();
+                updateStats();
+            }
         }
 
         function saveData() {
+            ensureAllProgress();
             localStorage.setItem(STORAGE_KEY, JSON.stringify({
                 students: state.students,
                 topics: state.topics,
@@ -1109,19 +1469,13 @@
             updateUI();
         }
 
-        function mergeTopics() {
-            const existingIds = new Set(state.topics.map(t => t.id));
-            for (const t of DEFAULT_TOPICS) {
-                if (!existingIds.has(t.id)) {
-                    state.topics.push({ ...t });
-                }
-            }
-        }
-
         function ensureAllProgress() {
             const topicIds = state.topics.map(t => t.id);
             for (const student of state.students) {
-                if (!student.progress) student.progress = {};
+                if (!student || typeof student !== 'object') continue;
+                if (!student.progress || typeof student.progress !== 'object') {
+                    student.progress = {};
+                }
                 for (const tid of topicIds) {
                     if (!(tid in student.progress)) {
                         student.progress[tid] = null;
@@ -1148,8 +1502,12 @@
             let understood = 0,
                 needsHelp = 0,
                 notSet = 0;
+            const topicIds = state.topics.map(t => t.id);
+            if (!topicIds.length) {
+                return { understood, needsHelp, notSet };
+            }
             for (const s of state.students) {
-                for (const tid of state.topics.map(t => t.id)) {
+                for (const tid of topicIds) {
                     const val = s.progress?.[tid];
                     if (val === 'understood') understood++;
                     else if (val === 'needs-help') needsHelp++;
@@ -1165,6 +1523,7 @@
             const search = document.getElementById('searchInput').value.toLowerCase().trim();
             const progressFilter = document.getElementById('filterProgress').value;
             const sortBy = document.getElementById('sortBy').value;
+            const visibleTopicIds = getVisibleTopicIds();
 
             let filtered = state.students.filter(s => {
                 if (cls && s.class !== cls) return false;
@@ -1176,7 +1535,7 @@
                 }
                 // Progress filter - check if student has any topic matching the filter
                 if (progressFilter) {
-                    const topicIdsToCheck = selectedTopicIds.size > 0 ? selectedTopicIds : state.topics.map(t => t.id);
+                    const topicIdsToCheck = selectedTopicIds.size > 0 ? selectedTopicIds : (visibleTopicIds.length > 0 ? visibleTopicIds : state.topics.map(t => t.id));
                     let hasMatchingProgress = false;
                     for (const tid of topicIdsToCheck) {
                         const val = s.progress?.[tid];
@@ -1335,10 +1694,71 @@
         //  RENDER GRID
         // ════════════════════════════════════════════════════════════════
 
+        let expandedTableChapterKeys = new Set();
+
+        function toggleTableChapterExpansion(chapterKey) {
+            if (expandedTableChapterKeys.has(chapterKey)) {
+                expandedTableChapterKeys.delete(chapterKey);
+            } else {
+                expandedTableChapterKeys.add(chapterKey);
+            }
+            renderGrid();
+        }
+
+        function isChapterExpandedInTable(chapterKey) {
+            return expandedTableChapterKeys.has(chapterKey);
+        }
+
+        function getTableColumnDefinitions() {
+            const groups = state.topicGroups.length > 0
+                ? state.topicGroups
+                : (state.topics.length > 0 ? [{ chapterNumber: 0, chapterName: 'Topics', subtopics: state.topics }] : []);
+
+            const columns = [];
+            for (const group of groups) {
+                const chapterKey = getChapterKey(group);
+                if (isChapterExpandedInTable(chapterKey)) {
+                    for (const topic of group.subtopics || []) {
+                        columns.push({
+                            type: 'topic',
+                            chapterKey,
+                            chapterNumber: group.chapterNumber,
+                            chapterName: group.chapterName,
+                            topic,
+                        });
+                    }
+                } else {
+                    columns.push({
+                        type: 'chapter',
+                        chapterKey,
+                        chapterNumber: group.chapterNumber,
+                        chapterName: group.chapterName,
+                        group,
+                    });
+                }
+            }
+
+            return { groups, columns };
+        }
+
+        function getChapterSummary(student, group) {
+            const topicIds = (group.subtopics || []).map(t => t.id);
+            let understood = 0;
+            let needsHelp = 0;
+            let notSet = 0;
+            for (const topicId of topicIds) {
+                const status = student.progress?.[topicId];
+                if (status === 'understood') understood++;
+                else if (status === 'needs-help') needsHelp++;
+                else notSet++;
+            }
+            return { understood, needsHelp, notSet, total: topicIds.length };
+        }
+
         function renderGrid() {
             const container = document.getElementById('gridContainer');
             const students = getFilteredStudents();
-            const topics = state.topics;
+            const { columns } = getTableColumnDefinitions();
 
             if (students.length === 0) {
                 container.innerHTML = `
@@ -1356,12 +1776,12 @@
                 return;
             }
 
-            if (topics.length === 0) {
+            if (columns.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="big">📚</div>
                         <h3>No topics loaded</h3>
-                        <p>Please check your data. Topics should be auto-populated.</p>
+                        <p>Fetch the latest topics from the API or use a saved backup to start tracking.</p>
                     </div>
                 `;
                 updateStats();
@@ -1370,18 +1790,30 @@
 
             // Build table
             let html = '<table><thead><tr><th>Student</th>';
-            for (const t of topics) {
-                const abbr = t.name.split(' ').slice(0, 2).join(' ').slice(0, 8);
-                html += `<th class="topic-header" title="${t.name} (${t.subject})">
-                            ${abbr}
-                            <span class="abbr">${t.subject.slice(0,3)}</span>
-                            <span class="full">${t.name}</span>
-                            <div class="bulk-actions">
-                                <button onclick="bulkMarkTopic('${t.id}', 'understood')">✓ All</button>
-                                <button onclick="bulkMarkTopic('${t.id}', 'needs-help')">✗ All</button>
-                                <button onclick="bulkClearTopic('${t.id}')">Clear</button>
-                            </div>
-                        </th>`;
+            for (const column of columns) {
+                if (column.type === 'chapter') {
+                    const chapterLabel = `Chapter ${column.chapterNumber}: ${column.chapterName}`;
+                    const isExpanded = isChapterExpandedInTable(column.chapterKey);
+                    html += `<th class="topic-header" title="${chapterLabel}">
+                                <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+                                    <span>${chapterLabel}</span>
+                                    <button class="btn btn-outline btn-sm" style="padding:2px 6px;" onclick="event.stopPropagation(); toggleTableChapterExpansion('${column.chapterKey}')">${isExpanded ? '▾' : '▸'}</button>
+                                </div>
+                            </th>`;
+                } else {
+                    const t = column.topic;
+                    const abbr = t.name.split(' ').slice(0, 2).join(' ').slice(0, 8);
+                    html += `<th class="topic-header" title="${t.name} (${t.subject})">
+                                ${abbr}
+                                <span class="abbr">${t.subject.slice(0,3)}</span>
+                                <span class="full">${t.name}</span>
+                                <div class="bulk-actions">
+                                    <button onclick="bulkMarkTopic('${t.id}', 'understood')">✓ All</button>
+                                    <button onclick="bulkMarkTopic('${t.id}', 'needs-help')">✗ All</button>
+                                    <button onclick="bulkClearTopic('${t.id}')">Clear</button>
+                                </div>
+                            </th>`;
+                }
             }
             html += '</tr></thead><tbody>';
 
@@ -1395,24 +1827,35 @@
                                 </span>
                             </div>
                         </td>`;
-                for (const t of topics) {
-                    const status = student.progress?.[t.id] || null;
-                    const isUnderstood = status === 'understood';
-                    const isNeedsHelp = status === 'needs-help';
-                    html += `<td>
-                                <div class="cell-btn-group" data-student="${student.id}" data-topic="${t.id}">
-                                    <button class="cell-btn ${isUnderstood ? 'active-understood' : ''}"
-                                            onclick="setProgress('${student.id}','${t.id}','understood')"
-                                            title="Set as Understood ✓">
-                                        ✓ <span class="label">U</span>
-                                    </button>
-                                    <button class="cell-btn ${isNeedsHelp ? 'active-needs-help' : ''}"
-                                            onclick="setProgress('${student.id}','${t.id}','needs-help')"
-                                            title="Set as Needs Help ✗">
-                                        ✗ <span class="label">H</span>
-                                    </button>
-                                </div>
-                            </td>`;
+                for (const column of columns) {
+                    if (column.type === 'chapter') {
+                        const summary = getChapterSummary(student, column.group);
+                        html += `<td>
+                                    <div class="cell-btn-group" data-student="${student.id}" data-chapter="${column.chapterKey}" title="${column.chapterName}">
+                                        <span style="font-size:10px;color:#64748b;display:block;">${summary.understood}/${summary.total} ✓</span>
+                                        <span style="font-size:10px;color:#64748b;display:block;">${summary.needsHelp} ✗</span>
+                                    </div>
+                                </td>`;
+                    } else {
+                        const t = column.topic;
+                        const status = student.progress?.[t.id] || null;
+                        const isUnderstood = status === 'understood';
+                        const isNeedsHelp = status === 'needs-help';
+                        html += `<td>
+                                    <div class="cell-btn-group" data-student="${student.id}" data-topic="${t.id}">
+                                        <button class="cell-btn ${isUnderstood ? 'active-understood' : ''}"
+                                                onclick="setProgress('${student.id}','${t.id}','understood')"
+                                                title="Set as Understood ✓">
+                                            ✓ <span class="label">U</span>
+                                        </button>
+                                        <button class="cell-btn ${isNeedsHelp ? 'active-needs-help' : ''}"
+                                                onclick="setProgress('${student.id}','${t.id}','needs-help')"
+                                                title="Set as Needs Help ✗">
+                                            ✗ <span class="label">H</span>
+                                        </button>
+                                    </div>
+                                </td>`;
+                    }
                 }
                 html += '</tr>';
             }
@@ -1472,6 +1915,7 @@
         }
 
         function updateUI() {
+            renderTopics();
             renderGrid();
             populateFilters();
             updateStats();
@@ -1735,8 +2179,10 @@
 
         function showUndoButton() {
             const undoBtn = document.getElementById('undoBtn');
-            if (undoBtn && lastDeletedStudent) {
-                undoBtn.style.display = 'inline-flex';
+            const bottomUndoBtn = document.getElementById('bottomUndoBtn');
+            if (lastDeletedStudent) {
+                if (undoBtn) undoBtn.style.display = 'inline-flex';
+                if (bottomUndoBtn) bottomUndoBtn.style.display = 'inline-flex';
             }
         }
 
@@ -1745,7 +2191,8 @@
             state.students.push(lastDeletedStudent);
             lastDeletedStudent = null;
             saveData();
-            document.getElementById('undoBtn').style.display = 'none';
+            if (document.getElementById('undoBtn')) document.getElementById('undoBtn').style.display = 'none';
+            if (document.getElementById('bottomUndoBtn')) document.getElementById('bottomUndoBtn').style.display = 'none';
             showToast('Student restored successfully', 'success');
         }
 
@@ -1927,7 +2374,7 @@
                     <div class="empty-state">
                         <div class="big">📚</div>
                         <h3>No topics loaded</h3>
-                        <p>Please check your data. Topics should be auto-populated.</p>
+                        <p>Fetch the latest topics from the API or use a saved backup to start tracking.</p>
                     </div>
                 `;
                 updateStats();
@@ -2151,7 +2598,7 @@
             if (!confirm('⚠️ This will delete ALL data. Are you sure?')) return;
             if (!confirm('Really? All students and progress will be lost forever.')) return;
             state.students = [];
-            state.topics = [...DEFAULT_TOPICS];
+            ensureAllProgress();
             saveData();
             showToast('All data reset', 'warning');
         }
@@ -2360,7 +2807,6 @@
         // ════════════════════════════════════════════════════════════════
 
         loadData();
-        renderGrid();
 
         // If Supabase config exists, test connection on load
         const config = getSupabaseConfig();
