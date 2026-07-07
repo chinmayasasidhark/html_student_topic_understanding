@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,6 +14,7 @@
             margin: 0;
             padding: 0;
         }
+
         body {
             font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
             background: #f1f5f9;
@@ -20,10 +22,12 @@
             padding: 20px;
             min-height: 100vh;
         }
+
         button {
             cursor: pointer;
             font: inherit;
         }
+
         input,
         select {
             font: inherit;
@@ -39,6 +43,7 @@
             overflow: hidden;
             padding: 24px 28px 32px;
         }
+
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -49,6 +54,7 @@
             padding-bottom: 16px;
             border-bottom: 2px solid #e9edf2;
         }
+
         .app-header h1 {
             font-size: 24px;
             font-weight: 700;
@@ -57,6 +63,7 @@
             gap: 10px;
             color: #0f172a;
         }
+
         .app-header h1 span {
             background: #2563eb;
             color: #fff;
@@ -66,12 +73,14 @@
             border-radius: 30px;
             letter-spacing: 0.3px;
         }
+
         .header-actions {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             align-items: center;
         }
+
         .header-actions .badge {
             background: #e9edf2;
             padding: 4px 14px;
@@ -95,49 +104,61 @@
             background: #f1f5f9;
             color: #1e293b;
         }
+
         .btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         }
+
         .btn-primary {
             background: #2563eb;
             color: #fff;
         }
+
         .btn-primary:hover {
             background: #1d4ed8;
         }
+
         .btn-success {
             background: #16a34a;
             color: #fff;
         }
+
         .btn-success:hover {
             background: #15803d;
         }
+
         .btn-danger {
             background: #dc2626;
             color: #fff;
         }
+
         .btn-danger:hover {
             background: #b91c1c;
         }
+
         .btn-outline {
             background: transparent;
             border: 2px solid #d1d9e6;
             color: #1e293b;
         }
+
         .btn-outline:hover {
             border-color: #94a3b8;
             background: #f8fafc;
         }
+
         .btn-sm {
             padding: 5px 12px;
             font-size: 12px;
             border-radius: 20px;
         }
+
         .btn-icon {
             padding: 6px 10px;
             border-radius: 30px;
         }
+
         .btn:disabled {
             opacity: 0.5;
             pointer-events: none;
@@ -155,17 +176,20 @@
             border-radius: 16px;
             border: 1px solid #e9edf2;
         }
+
         .toolbar .group {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             align-items: center;
         }
+
         .toolbar .group+.group {
             margin-left: 6px;
             padding-left: 14px;
             border-left: 2px solid #e2e8f0;
         }
+
         .toolbar input,
         .toolbar select {
             padding: 7px 14px;
@@ -177,21 +201,26 @@
             transition: border 0.15s;
             min-width: 130px;
         }
+
         .toolbar input:focus,
         .toolbar select:focus {
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
         }
+
         .toolbar input::placeholder {
             color: #94a3b8;
         }
+
         .toolbar .search-wrap {
             position: relative;
         }
+
         .toolbar .search-wrap input {
             padding-left: 34px;
             min-width: 180px;
         }
+
         .toolbar .search-wrap .icon {
             position: absolute;
             left: 12px;
@@ -206,6 +235,7 @@
             position: relative;
             z-index: 1000;
         }
+
         .dropdown-btn {
             display: inline-flex;
             align-items: center;
@@ -219,10 +249,13 @@
             transition: all 0.15s;
             min-width: 130px;
         }
-        .dropdown-btn:hover, .dropdown-btn.active {
+
+        .dropdown-btn:hover,
+        .dropdown-btn.active {
             border-color: #2563eb;
             background: #f8fafc;
         }
+
         .dropdown-btn .count {
             background: #2563eb;
             color: #fff;
@@ -231,6 +264,7 @@
             font-size: 11px;
             font-weight: 600;
         }
+
         .dropdown-menu {
             position: absolute;
             top: calc(100% + 8px);
@@ -247,9 +281,11 @@
             overflow-y: auto;
             display: none;
         }
+
         .dropdown-menu.active {
             display: block;
         }
+
         .dropdown-menu h4 {
             font-size: 13px;
             font-weight: 600;
@@ -258,11 +294,13 @@
             padding-bottom: 8px;
             border-bottom: 1px solid #e9edf2;
         }
+
         .dropdown-menu .checkbox-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
+
         .dropdown-menu .checkbox-item {
             display: flex;
             align-items: center;
@@ -271,14 +309,17 @@
             color: #475569;
             cursor: pointer;
         }
+
         .dropdown-menu .checkbox-item:hover {
             color: #1e293b;
         }
+
         .dropdown-menu .checkbox-item input {
             width: 16px;
             height: 16px;
             cursor: pointer;
         }
+
         .dropdown-menu .checkbox-item .subject-tag {
             font-size: 10px;
             padding: 2px 6px;
@@ -287,6 +328,7 @@
             color: #64748b;
             margin-left: auto;
         }
+
         .dropdown-menu .actions {
             display: flex;
             gap: 8px;
@@ -294,6 +336,7 @@
             padding-top: 10px;
             border-top: 1px solid #e9edf2;
         }
+
         .dropdown-menu .actions button {
             flex: 1;
             padding: 6px 12px;
@@ -311,15 +354,18 @@
             color: #475569;
             border-bottom: 1px solid #e9edf2;
         }
+
         .stats .stat {
             display: flex;
             align-items: center;
             gap: 6px;
         }
+
         .stats .stat strong {
             color: #0f172a;
             font-weight: 600;
         }
+
         .stats .stat .dot {
             display: inline-block;
             width: 12px;
@@ -327,12 +373,15 @@
             border-radius: 30px;
             margin-right: 4px;
         }
+
         .stats .stat .dot.green {
             background: #22c55e;
         }
+
         .stats .stat .dot.red {
             background: #ef4444;
         }
+
         .stats .stat .dot.gray {
             background: #cbd5e1;
         }
@@ -346,12 +395,14 @@
             max-height: 70vh;
             position: relative;
         }
+
         .grid-wrap table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
             min-width: 600px;
         }
+
         .grid-wrap th,
         .grid-wrap td {
             padding: 6px 8px;
@@ -361,6 +412,7 @@
             vertical-align: middle;
             white-space: nowrap;
         }
+
         .grid-wrap th {
             background: #f8fafc;
             font-weight: 600;
@@ -371,6 +423,7 @@
             box-shadow: 0 1px 0 #e9edf2;
             padding: 8px 6px;
         }
+
         .grid-wrap th:first-child,
         .grid-wrap td:first-child {
             position: sticky;
@@ -385,23 +438,28 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .grid-wrap th:first-child {
             background: #f8fafc;
             z-index: 11;
             min-width: 140px;
             max-width: 200px;
         }
+
         .grid-wrap td:first-child {
             font-weight: 500;
             font-size: 12.5px;
             background: #fafcfd;
         }
+
         .grid-wrap .student-row:hover td {
             background: #f8fafc;
         }
+
         .grid-wrap .student-row:hover td:first-child {
             background: #f1f5f9;
         }
+
         .grid-wrap .topic-header {
             font-size: 11px;
             letter-spacing: 0.2px;
@@ -412,6 +470,7 @@
             position: relative;
             z-index: 20;
         }
+
         .grid-wrap .topic-header .abbr {
             display: block;
             font-size: 10px;
@@ -419,6 +478,7 @@
             color: #64748b;
             margin-top: 1px;
         }
+
         .grid-wrap .topic-header .full {
             display: none;
             position: absolute;
@@ -435,9 +495,11 @@
             z-index: 15;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
+
         .grid-wrap .topic-header:hover .full {
             display: block;
         }
+
         .grid-wrap .topic-header .bulk-actions {
             display: none;
             position: absolute;
@@ -454,11 +516,13 @@
             white-space: nowrap;
             pointer-events: auto;
         }
+
         .grid-wrap .topic-header:hover .bulk-actions,
         .grid-wrap .topic-header.bulk-active .bulk-actions,
         .grid-wrap .topic-header .bulk-actions:hover {
             display: flex;
         }
+
         .grid-wrap .topic-header .bulk-actions button {
             padding: 4px 8px;
             font-size: 11px;
@@ -467,6 +531,7 @@
             background: #fff;
             cursor: pointer;
         }
+
         .grid-wrap .topic-header .bulk-actions button:hover {
             background: #f8fafc;
         }
@@ -479,6 +544,7 @@
             background: #f1f5f9;
             padding: 2px;
         }
+
         .cell-btn {
             border: none;
             border-radius: 30px;
@@ -494,28 +560,34 @@
             justify-content: center;
             gap: 2px;
         }
+
         .cell-btn:hover {
             transform: scale(1.05);
         }
+
         .cell-btn.active-understood {
             background: #22c55e;
             color: #fff;
             box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
         }
+
         .cell-btn.active-needs-help {
             background: #ef4444;
             color: #fff;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
         }
+
         .cell-btn:not(.active-understood):not(.active-needs-help):hover {
             background: #e2e8f0;
             color: #1e293b;
         }
+
         .cell-btn .label {
             font-size: 10px;
             font-weight: 400;
             opacity: 0.8;
         }
+
         .cell-btn.active-understood .label,
         .cell-btn.active-needs-help .label {
             opacity: 1;
@@ -527,15 +599,18 @@
             text-align: center;
             color: #64748b;
         }
+
         .empty-state .big {
             font-size: 48px;
             margin-bottom: 12px;
         }
+
         .empty-state h3 {
             font-size: 20px;
             color: #0f172a;
             margin-bottom: 6px;
         }
+
         .empty-state p {
             max-width: 400px;
             margin: 0 auto 18px;
@@ -554,9 +629,11 @@
             justify-content: center;
             padding: 20px;
         }
+
         .modal-overlay.active {
             display: flex;
         }
+
         .modal {
             background: #fff;
             border-radius: 24px;
@@ -568,29 +645,35 @@
             box-shadow: 0 40px 80px rgba(0, 0, 0, 0.2);
             animation: modalIn 0.2s ease;
         }
+
         @keyframes modalIn {
             from {
                 opacity: 0;
                 transform: scale(0.96) translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1) translateY(0);
             }
         }
+
         .modal h2 {
             font-size: 22px;
             margin-bottom: 8px;
             color: #0f172a;
         }
+
         .modal .sub {
             color: #64748b;
             font-size: 14px;
             margin-bottom: 20px;
         }
+
         .modal .form-group {
             margin-bottom: 16px;
         }
+
         .modal .form-group label {
             display: block;
             font-weight: 600;
@@ -598,6 +681,7 @@
             color: #1e293b;
             margin-bottom: 4px;
         }
+
         .modal .form-group input,
         .modal .form-group textarea,
         .modal .form-group select {
@@ -610,23 +694,27 @@
             transition: border 0.15s;
             background: #fafcfd;
         }
+
         .modal .form-group input:focus,
         .modal .form-group textarea:focus,
         .modal .form-group select:focus {
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
+
         .modal .form-group textarea {
             resize: vertical;
             min-height: 80px;
             font-family: 'Segoe UI', monospace;
             font-size: 13px;
         }
+
         .modal .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
         }
+
         .modal .modal-actions {
             display: flex;
             gap: 10px;
@@ -635,9 +723,11 @@
             padding-top: 18px;
             border-top: 1px solid #e9edf2;
         }
+
         .modal .modal-actions .btn {
             padding: 10px 28px;
         }
+
         .modal .hint {
             font-size: 12px;
             color: #94a3b8;
@@ -656,6 +746,7 @@
             max-width: 380px;
             width: 100%;
         }
+
         .toast {
             padding: 14px 20px;
             border-radius: 16px;
@@ -669,20 +760,25 @@
             align-items: center;
             gap: 10px;
         }
+
         .toast.success {
             background: #16a34a;
         }
+
         .toast.error {
             background: #dc2626;
         }
+
         .toast.warning {
             background: #d97706;
         }
+
         @keyframes toastIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -694,9 +790,11 @@
             display: none;
             margin-top: 10px;
         }
+
         .settings-panel.active {
             display: block;
         }
+
         .settings-panel .card {
             background: #f8fafc;
             border-radius: 16px;
@@ -704,37 +802,44 @@
             border: 1px solid #e9edf2;
             margin-bottom: 18px;
         }
+
         .settings-panel .card h3 {
             font-size: 16px;
             margin-bottom: 6px;
             color: #0f172a;
         }
+
         .settings-panel .card .desc {
             color: #64748b;
             font-size: 14px;
             margin-bottom: 14px;
         }
+
         .settings-panel .config-row {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             align-items: flex-end;
         }
+
         .settings-panel .config-row .form-group {
             flex: 1;
             min-width: 180px;
             margin-bottom: 0;
         }
+
         .settings-panel .config-row .form-group label {
             font-size: 12px;
             font-weight: 600;
             color: #475569;
         }
+
         .settings-panel .config-row .form-group input {
             padding: 8px 12px;
             font-size: 13px;
             border-radius: 10px;
         }
+
         .settings-panel .status-badge {
             display: inline-flex;
             align-items: center;
@@ -744,10 +849,12 @@
             font-size: 12px;
             font-weight: 600;
         }
+
         .settings-panel .status-badge.connected {
             background: #dcfce7;
             color: #166534;
         }
+
         .settings-panel .status-badge.disconnected {
             background: #fee2e2;
             color: #991b1b;
@@ -758,14 +865,17 @@
             height: 8px;
             width: 8px;
         }
+
         .grid-wrap::-webkit-scrollbar-track {
             background: #f1f5f9;
             border-radius: 8px;
         }
+
         .grid-wrap::-webkit-scrollbar-thumb {
             background: #cbd5e1;
             border-radius: 8px;
         }
+
         .grid-wrap::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
@@ -775,16 +885,20 @@
             .app {
                 padding: 16px;
             }
+
             .app-header h1 {
                 font-size: 20px;
             }
+
             .toolbar {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .toolbar .group {
                 flex-wrap: wrap;
             }
+
             .toolbar .group+.group {
                 margin-left: 0;
                 padding-left: 0;
@@ -792,19 +906,24 @@
                 padding-top: 8px;
                 border-top: 2px solid #e2e8f0;
             }
+
             .modal {
                 padding: 24px 20px;
             }
+
             .modal .form-row {
                 grid-template-columns: 1fr;
             }
+
             .settings-panel .config-row {
                 flex-direction: column;
             }
+
             .stats {
                 gap: 10px 20px;
                 font-size: 13px;
             }
+
             .grid-wrap th:first-child,
             .grid-wrap td:first-child {
                 min-width: 100px;
@@ -812,36 +931,44 @@
                 padding: 4px 8px;
                 font-size: 11px;
             }
+
             .cell-btn {
                 font-size: 11px;
                 padding: 2px 6px;
                 min-width: 26px;
             }
+
             .cell-btn .label {
                 display: none;
             }
         }
+
         @media (max-width: 500px) {
             .app-header {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .header-actions {
                 justify-content: stretch;
             }
+
             .header-actions .btn {
                 flex: 1;
                 justify-content: center;
                 font-size: 12px;
                 padding: 6px 12px;
             }
+
             .grid-wrap {
                 font-size: 11px;
             }
+
             .grid-wrap th,
             .grid-wrap td {
                 padding: 3px 4px;
             }
+
             .cell-btn {
                 font-size: 10px;
                 padding: 2px 4px;
@@ -857,6 +984,7 @@
             border-radius: 16px;
             background: linear-gradient(135deg, #f8fafc 0%, #fefefe 100%);
         }
+
         .topics-panel-header {
             display: flex;
             justify-content: space-between;
@@ -865,30 +993,36 @@
             flex-wrap: wrap;
             margin-bottom: 12px;
         }
+
         .topics-panel-header h3 {
             font-size: 16px;
             margin-bottom: 4px;
         }
+
         .topics-panel-header p {
             color: #64748b;
             font-size: 13px;
         }
+
         .topics-status {
             font-size: 12px;
             color: #64748b;
             margin-top: 6px;
         }
+
         .topics-grid {
             display: grid;
             gap: 12px;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         }
+
         .chapter-card {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px;
             background: #fff;
         }
+
         .chapter-card .chapter-header {
             display: flex;
             justify-content: space-between;
@@ -896,15 +1030,18 @@
             gap: 8px;
             margin-bottom: 8px;
         }
+
         .chapter-card.active {
             border-color: #2563eb;
             box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.16);
             background: #f8fbff;
         }
+
         .chapter-card .chapter-header strong {
             font-size: 13px;
             color: #0f172a;
         }
+
         .chapter-card .chapter-count {
             font-size: 11px;
             color: #64748b;
@@ -912,6 +1049,7 @@
             padding: 2px 8px;
             border-radius: 999px;
         }
+
         .chapter-card ul {
             list-style: none;
             display: flex;
@@ -920,18 +1058,21 @@
             margin: 0;
             padding: 0;
         }
+
         .chapter-card li {
             font-size: 12px;
             color: #334155;
             padding-left: 12px;
             position: relative;
         }
+
         .chapter-card li::before {
             content: '•';
             position: absolute;
             left: 0;
             color: #2563eb;
         }
+
         .topics-empty {
             padding: 14px;
             border: 1px dashed #cbd5e1;
@@ -945,34 +1086,98 @@
         .hidden {
             display: none !important;
         }
+
         .flex-center {
             display: flex;
             align-items: center;
             gap: 6px;
         }
+
         .gap-2 {
             gap: 8px;
         }
+
         .mt-8 {
             margin-top: 8px;
         }
+
         .text-muted {
             color: #94a3b8;
             font-size: 13px;
         }
+
         .text-sm {
             font-size: 12px;
         }
+
         .fw-600 {
             font-weight: 600;
         }
+
         .truncate {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
+        /* ── Hierarchical Filter Styles ── */
+        .hierarchy-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .hierarchy-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #475569;
+            transition: all 0.15s ease;
+        }
+        .hierarchy-item:hover {
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        .hierarchy-item.active {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+        }
+        .hierarchy-chapter {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 6px;
+        }
+        .hierarchy-chapter-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 2px 6px;
+            font-size: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .hierarchy-chapter-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        .hierarchy-topic {
+            padding-left: 28px;
+            font-size: 12.5px;
+        }
+        .hierarchy-show-all {
+            font-weight: 600;
+            border-bottom: 1.5px solid #e9edf2;
+            padding-bottom: 8px;
+            margin-bottom: 6px;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="app" id="app">
@@ -986,7 +1191,8 @@
                 <span class="badge" id="studentCountBadge">0 students</span>
                 <button class="btn btn-outline btn-sm" onclick="showSettings()">⚙️ Settings</button>
                 <button class="btn btn-outline btn-sm" onclick="exportCSV()">📥 Export CSV</button>
-                <button class="btn btn-outline btn-sm" onclick="document.getElementById('importInput').click()">📤 Import CSV</button>
+                <button class="btn btn-outline btn-sm" onclick="document.getElementById('importInput').click()">📤
+                    Import CSV</button>
                 <input type="file" id="importInput" accept=".csv" style="display:none" onchange="importCSV(event)" />
                 <button class="btn btn-success btn-sm" onclick="pushToSupabase()">☁️ Push to Supabase</button>
             </div>
@@ -1079,7 +1285,8 @@
         <div class="settings-panel" id="settingsPanel">
             <div class="card">
                 <h3>☁️ Supabase Configuration</h3>
-                <p class="desc">Connect to your Supabase project to sync data. URL and anon key are saved in your browser.</p>
+                <p class="desc">Connect to your Supabase project to sync data. URL and anon key are saved in your
+                    browser.</p>
                 <div class="config-row">
                     <div class="form-group">
                         <label>Supabase URL</label>
@@ -1104,9 +1311,12 @@
                 <p class="desc">Export all data as JSON backup, or import a previously exported backup.</p>
                 <div style="display:flex;flex-wrap:wrap;gap:10px;">
                     <button class="btn btn-outline" onclick="exportJSON()">💾 Export JSON Backup</button>
-                    <button class="btn btn-outline" onclick="document.getElementById('importJSONInput').click()">📂 Import JSON Backup</button>
-                    <input type="file" id="importJSONInput" accept=".json" style="display:none" onchange="importJSON(event)" />
-                    <button class="btn btn-outline" onclick="resetAllData()" style="color:#dc2626;border-color:#fca5a5;">⚠️ Reset All Data</button>
+                    <button class="btn btn-outline" onclick="document.getElementById('importJSONInput').click()">📂
+                        Import JSON Backup</button>
+                    <input type="file" id="importJSONInput" accept=".json" style="display:none"
+                        onchange="importJSON(event)" />
+                    <button class="btn btn-outline" onclick="resetAllData()"
+                        style="color:#dc2626;border-color:#fca5a5;">⚠️ Reset All Data</button>
                 </div>
             </div>
             <div style="text-align:right;margin-top:6px;">
@@ -1150,6 +1360,9 @@
         let lastChapterAction = null;
         let lastGlobalAction = null;
         let selectedChapterKey = null;
+        let activeFilterType = 'all'; // 'all', 'chapter', 'topic'
+        let activeFilterValue = null; // chapterKey or topicId
+        let filterChapterExpansionState = {};
 
         // ─── Topic loading / storage ───
 
@@ -1267,22 +1480,160 @@
         }
 
         function getVisibleTopics() {
-            if (!selectedChapterKey) return state.topics;
-            const chapter = state.topicGroups.find(group => getChapterKey(group) === selectedChapterKey);
-            return chapter ? chapter.subtopics : [];
+            if (activeFilterType === 'chapter') {
+                const group = state.topicGroups.find(g => getChapterKey(g) === activeFilterValue);
+                return group ? group.subtopics : [];
+            } else if (activeFilterType === 'topic') {
+                const topic = state.topics.find(t => t.id === activeFilterValue);
+                return topic ? [topic] : [];
+            }
+            return state.topics;
         }
 
         function getVisibleTopicIds() {
             return getVisibleTopics().map(topic => topic.id);
         }
 
+        function setHierarchicalFilter(type, value) {
+            activeFilterType = type;
+            activeFilterValue = value;
+            
+            if (type === 'chapter') {
+                selectedChapterKey = value;
+                filterChapterExpansionState[value] = true;
+                chapterExpansionState[value] = true;
+            } else if (type === 'topic') {
+                // Keep selectedChapterKey unchanged or clear it. 
+                // We clear it so chapter card selection style doesn't conflict
+                selectedChapterKey = null;
+            } else {
+                selectedChapterKey = null;
+            }
+            
+            updateFilterButtonUI();
+            renderTopics();
+            renderGrid();
+            populateHierarchicalFilter();
+        }
+
+        function toggleFilterChapterExpansion(chapterKey, event) {
+            if (event) event.stopPropagation();
+            filterChapterExpansionState[chapterKey] = !filterChapterExpansionState[chapterKey];
+            populateHierarchicalFilter();
+        }
+
+        function updateFilterButtonUI() {
+            const btn = document.getElementById('topicFilterBtn');
+            const countEl = document.getElementById('topicFilterCount');
+            if (!btn || !countEl) return;
+
+            if (activeFilterType === 'all') {
+                btn.innerHTML = `📚 Topics <span class="count" id="topicFilterCount" style="display:none;">0</span>`;
+            } else if (activeFilterType === 'chapter') {
+                const group = getChapterByKey(activeFilterValue);
+                const chName = group ? `Ch ${group.chapterNumber}` : 'Chapter';
+                btn.innerHTML = `📖 ${chName} <span class="count" id="topicFilterCount" style="background:#16a34a;display:inline;">Filter</span>`;
+            } else if (activeFilterType === 'topic') {
+                const topic = state.topics.find(t => t.id === activeFilterValue);
+                const tName = topic ? (topic.name.length > 10 ? topic.name.slice(0, 10) + '...' : topic.name) : 'Topic';
+                btn.innerHTML = `📝 ${tName} <span class="count" id="topicFilterCount" style="background:#16a34a;display:inline;">Filter</span>`;
+            }
+        }
+
+        function populateHierarchicalFilter() {
+            const container = document.getElementById('topicCheckboxes');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // 1. Show All Option
+            const showAllEl = document.createElement('div');
+            showAllEl.className = `hierarchy-item hierarchy-show-all ${activeFilterType === 'all' ? 'active' : ''}`;
+            showAllEl.innerHTML = `🌍 Show All Topics`;
+            showAllEl.onclick = () => {
+                setHierarchicalFilter('all', null);
+            };
+            container.appendChild(showAllEl);
+            
+            // 2. Chapters & Topics
+            const groups = state.topicGroups;
+            if (groups.length === 0) {
+                const emptyEl = document.createElement('div');
+                emptyEl.style.padding = '8px';
+                emptyEl.style.fontSize = '12px';
+                emptyEl.style.color = '#64748b';
+                emptyEl.textContent = 'No chapters/topics loaded';
+                container.appendChild(emptyEl);
+                return;
+            }
+            
+            for (const group of groups) {
+                const chapterKey = getChapterKey(group);
+                const isExpanded = filterChapterExpansionState[chapterKey] === true;
+                const isChapterActive = activeFilterType === 'chapter' && activeFilterValue === chapterKey;
+                
+                // Chapter Row
+                const chapterRow = document.createElement('div');
+                chapterRow.className = `hierarchy-item ${isChapterActive ? 'active' : ''}`;
+                chapterRow.style.padding = '4px 6px';
+                
+                const chapterContent = document.createElement('div');
+                chapterContent.className = 'hierarchy-chapter';
+                
+                // Toggle Button
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'hierarchy-chapter-btn';
+                toggleBtn.innerHTML = isExpanded ? '▾' : '▸';
+                toggleBtn.onclick = (e) => {
+                    toggleFilterChapterExpansion(chapterKey, e);
+                };
+                
+                // Title element
+                const titleSpan = document.createElement('span');
+                titleSpan.style.flex = '1';
+                titleSpan.style.fontWeight = '500';
+                titleSpan.textContent = `Ch ${group.chapterNumber}: ${group.chapterName}`;
+                titleSpan.onclick = (e) => {
+                    e.stopPropagation();
+                    setHierarchicalFilter('chapter', chapterKey);
+                };
+                
+                chapterContent.appendChild(toggleBtn);
+                chapterContent.appendChild(titleSpan);
+                chapterRow.appendChild(chapterContent);
+                container.appendChild(chapterRow);
+                
+                // Topic Rows (if expanded)
+                if (isExpanded) {
+                    for (const topic of group.subtopics || []) {
+                        const isTopicActive = activeFilterType === 'topic' && activeFilterValue === topic.id;
+                        const topicEl = document.createElement('div');
+                        topicEl.className = `hierarchy-item hierarchy-topic ${isTopicActive ? 'active' : ''}`;
+                        topicEl.textContent = topic.name;
+                        topicEl.onclick = () => {
+                            setHierarchicalFilter('topic', topic.id);
+                        };
+                        container.appendChild(topicEl);
+                    }
+                }
+            }
+        }
+
         function selectChapter(chapterKey) {
             selectedChapterKey = selectedChapterKey === chapterKey ? null : chapterKey;
             if (selectedChapterKey) {
                 chapterExpansionState[chapterKey] = true;
+                activeFilterType = 'chapter';
+                activeFilterValue = selectedChapterKey;
+                filterChapterExpansionState[selectedChapterKey] = true;
+            } else {
+                activeFilterType = 'all';
+                activeFilterValue = null;
             }
+            updateFilterButtonUI();
             renderTopics();
             renderGrid();
+            populateHierarchicalFilter();
         }
 
         function getChapterByKey(chapterKey) {
@@ -1593,7 +1944,7 @@
             }
             classSel.value = currentClass;
             sectionSel.value = currentSection;
-            populateTopicCheckboxes();
+            populateHierarchicalFilter();
         }
 
         function populateTopicCheckboxes() {
@@ -1616,7 +1967,7 @@
                     item.innerHTML = `
                         <input type="checkbox" value="${t.id}" ${isChecked} onchange="toggleTopicFilterSelection('${t.id}')">
                         <span>${t.name}</span>
-                        <span class="subject-tag">${t.subject.slice(0,3)}</span>
+                        <span class="subject-tag">${t.subject.slice(0, 3)}</span>
                     `;
                     container.appendChild(item);
                 }
@@ -1643,14 +1994,12 @@
 
         function selectAllTopics() {
             selectedTopicIds = new Set(state.topics.map(t => t.id));
-            populateTopicCheckboxes();
-            renderGrid();
+            setHierarchicalFilter('all', null);
         }
 
         function clearTopicFilter() {
             selectedTopicIds.clear();
-            populateTopicCheckboxes();
-            renderGrid();
+            setHierarchicalFilter('all', null);
         }
 
         function updateTopicFilterCount() {
@@ -1665,7 +2014,7 @@
         }
 
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const dropdown = document.querySelector('.dropdown-filter');
             if (dropdown && !dropdown.contains(e.target)) {
                 document.getElementById('topicFilterMenu').classList.remove('active');
@@ -1805,7 +2154,7 @@
                     const abbr = t.name.split(' ').slice(0, 2).join(' ').slice(0, 8);
                     html += `<th class="topic-header" title="${t.name} (${t.subject})">
                                 ${abbr}
-                                <span class="abbr">${t.subject.slice(0,3)}</span>
+                                <span class="abbr">${t.subject.slice(0, 3)}</span>
                                 <span class="full">${t.name}</span>
                                 <div class="bulk-actions">
                                     <button onclick="bulkMarkTopic('${t.id}', 'understood')">✓ All</button>
@@ -2348,10 +2697,10 @@
 
         // Override renderGrid to include delete button
         const originalRenderGrid = renderGrid;
-        renderGrid = function() {
+        renderGrid = function () {
             const container = document.getElementById('gridContainer');
             const students = getFilteredStudents();
-            const topics = state.topics;
+            const topics = getVisibleTopics();
 
             if (students.length === 0) {
                 container.innerHTML = `
@@ -2386,7 +2735,7 @@
                 const abbr = t.name.split(' ').slice(0, 2).join(' ').slice(0, 8);
                 html += `<th class="topic-header" title="${t.name} (${t.subject})">
                             ${abbr}
-                            <span class="abbr">${t.subject.slice(0,3)}</span>
+                            <span class="abbr">${t.subject.slice(0, 3)}</span>
                             <span class="full">${t.name}</span>
                             <div class="bulk-actions">
                                 <button onclick="bulkMarkTopic('${t.id}', 'understood')">✓ All</button>
@@ -2475,7 +2824,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `student_progress_${new Date().toISOString().slice(0,10)}.csv`;
+            a.download = `student_progress_${new Date().toISOString().slice(0, 10)}.csv`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('CSV exported successfully', 'success');
@@ -2485,7 +2834,7 @@
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 try {
                     const text = e.target.result;
                     const lines = text.split('\n').filter(l => l.trim());
@@ -2563,7 +2912,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `student_progress_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `student_progress_backup_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('JSON backup downloaded', 'success');
@@ -2573,7 +2922,7 @@
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 try {
                     const data = JSON.parse(e.target.result);
                     if (!data.students || !data.topics) {
@@ -2775,12 +3124,12 @@
         }
 
         // Close modal on overlay click
-        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        document.getElementById('modalOverlay').addEventListener('click', function (e) {
             if (e.target === this) closeModal();
         });
 
         // Close on Escape
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') closeModal();
         });
 
@@ -2820,4 +3169,5 @@
     </script>
 
 </body>
+
 </html>
