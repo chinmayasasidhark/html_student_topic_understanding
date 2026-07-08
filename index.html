@@ -1120,60 +1120,65 @@
             white-space: nowrap;
         }
 
-        /* ── Hierarchical Filter Styles ── */
-        .hierarchy-container {
+        /* ── Hierarchical Multi-Select Filter Styles ── */
+        .filter-chapter-container {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            margin-bottom: 10px;
-        }
-        .hierarchy-item {
-            display: flex;
-            align-items: center;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            color: #475569;
-            transition: all 0.15s ease;
-        }
-        .hierarchy-item:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-        .hierarchy-item.active {
-            background: #e0f2fe;
-            color: #0369a1;
-            font-weight: 600;
-        }
-        .hierarchy-chapter {
-            display: flex;
-            align-items: center;
-            width: 100%;
             gap: 6px;
         }
-        .hierarchy-chapter-btn {
+        .filter-chapter-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #1e293b;
+            font-weight: 600;
+            padding: 3px 0;
+        }
+        .filter-chapter-toggle {
             background: transparent;
             border: none;
             color: #64748b;
-            padding: 2px 6px;
-            font-size: 10px;
-            border-radius: 4px;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            font-size: 12px;
+            border-radius: 4px;
+            transition: background 0.15s;
         }
-        .hierarchy-chapter-btn:hover {
-            background: #e2e8f0;
+        .filter-chapter-toggle:hover {
+            background: #f1f5f9;
             color: #0f172a;
         }
-        .hierarchy-topic {
-            padding-left: 28px;
-            font-size: 12.5px;
+        .filter-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            flex: 1;
         }
-        .hierarchy-show-all {
-            font-weight: 600;
-            border-bottom: 1.5px solid #e9edf2;
-            padding-bottom: 8px;
+        .filter-checkbox-label input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+        .filter-topic-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-left: 26px;
             margin-bottom: 6px;
+        }
+        .filter-topic-item {
+            display: flex;
+            align-items: center;
+            padding: 2px 0;
+            font-size: 12.5px;
+            color: #475569;
         }
     </style>
 </head>
@@ -1251,12 +1256,15 @@
         </div>
 
         <div class="topics-panel" id="topicsPanel">
-            <div class="topics-panel-header">
-                <div>
-                    <h3>📚 Topics from API</h3>
-                    <p id="topicsSourceLabel">Grade 10 · Math</p>
+            <div class="topics-panel-header" id="topicsPanelHeader" style="cursor: pointer; user-select: none;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="topicsPanelToggleIcon" style="font-size: 16px; color: #64748b;">▸</span>
+                    <div>
+                        <h3>📚 Topics from API</h3>
+                        <p id="topicsSourceLabel">Grade 10 · Math</p>
+                    </div>
                 </div>
-                <button class="btn btn-outline btn-sm" onclick="fetchTopics()">🔄 Fetch Topics</button>
+                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); fetchTopics()">🔄 Fetch Topics</button>
             </div>
             <div class="topics-status" id="topicsStatus">No topics loaded yet. Fetch the latest syllabus data to begin.</div>
             <div class="topics-grid" id="topicsContent"></div>
@@ -1480,14 +1488,16 @@
         }
 
         function getVisibleTopics() {
+            // Start with selected/checked topics (multi-select)
+            let topics = state.topics.filter(t => selectedTopicIds.has(t.id));
+            
+            // Further filter by single-select from the Chapter cards/API section if active
             if (activeFilterType === 'chapter') {
-                const group = state.topicGroups.find(g => getChapterKey(g) === activeFilterValue);
-                return group ? group.subtopics : [];
+                topics = topics.filter(t => getChapterKey(t) === activeFilterValue);
             } else if (activeFilterType === 'topic') {
-                const topic = state.topics.find(t => t.id === activeFilterValue);
-                return topic ? [topic] : [];
+                topics = topics.filter(t => t.id === activeFilterValue);
             }
-            return state.topics;
+            return topics;
         }
 
         function getVisibleTopicIds() {
@@ -1518,7 +1528,8 @@
 
         function toggleFilterChapterExpansion(chapterKey, event) {
             if (event) event.stopPropagation();
-            filterChapterExpansionState[chapterKey] = !filterChapterExpansionState[chapterKey];
+            const isExpanded = filterChapterExpansionState[chapterKey] !== false;
+            filterChapterExpansionState[chapterKey] = !isExpanded;
             populateHierarchicalFilter();
         }
 
@@ -1527,8 +1538,10 @@
             const countEl = document.getElementById('topicFilterCount');
             if (!btn || !countEl) return;
 
+            const count = selectedTopicIds.size;
+
             if (activeFilterType === 'all') {
-                btn.innerHTML = `📚 Topics <span class="count" id="topicFilterCount" style="display:none;">0</span>`;
+                btn.innerHTML = `📚 Topics <span class="count" id="topicFilterCount" style="${count > 0 ? 'display:inline;' : 'display:none;'}">${count}</span>`;
             } else if (activeFilterType === 'chapter') {
                 const group = getChapterByKey(activeFilterValue);
                 const chName = group ? `Ch ${group.chapterNumber}` : 'Chapter';
@@ -1546,16 +1559,6 @@
             
             container.innerHTML = '';
             
-            // 1. Show All Option
-            const showAllEl = document.createElement('div');
-            showAllEl.className = `hierarchy-item hierarchy-show-all ${activeFilterType === 'all' ? 'active' : ''}`;
-            showAllEl.innerHTML = `🌍 Show All Topics`;
-            showAllEl.onclick = () => {
-                setHierarchicalFilter('all', null);
-            };
-            container.appendChild(showAllEl);
-            
-            // 2. Chapters & Topics
             const groups = state.topicGroups;
             if (groups.length === 0) {
                 const emptyEl = document.createElement('div');
@@ -1567,56 +1570,127 @@
                 return;
             }
             
+            const filterContainer = document.createElement('div');
+            filterContainer.className = 'filter-chapter-container';
+            
             for (const group of groups) {
                 const chapterKey = getChapterKey(group);
-                const isExpanded = filterChapterExpansionState[chapterKey] === true;
-                const isChapterActive = activeFilterType === 'chapter' && activeFilterValue === chapterKey;
+                const isExpanded = filterChapterExpansionState[chapterKey] !== false;
+                const subtopics = group.subtopics || [];
+                const subtopicIds = subtopics.map(t => t.id);
                 
-                // Chapter Row
+                // Determine selection state
+                const selectedCount = subtopicIds.filter(id => selectedTopicIds.has(id)).length;
+                const isAllSelected = selectedCount === subtopicIds.length && subtopicIds.length > 0;
+                const isSomeSelected = selectedCount > 0 && selectedCount < subtopicIds.length;
+                
+                // Create Chapter Row Container
                 const chapterRow = document.createElement('div');
-                chapterRow.className = `hierarchy-item ${isChapterActive ? 'active' : ''}`;
-                chapterRow.style.padding = '4px 6px';
+                chapterRow.className = 'filter-chapter-row';
                 
-                const chapterContent = document.createElement('div');
-                chapterContent.className = 'hierarchy-chapter';
-                
-                // Toggle Button
+                // Toggle expand/collapse button
                 const toggleBtn = document.createElement('button');
-                toggleBtn.className = 'hierarchy-chapter-btn';
+                toggleBtn.className = 'filter-chapter-toggle';
+                toggleBtn.type = 'button';
                 toggleBtn.innerHTML = isExpanded ? '▾' : '▸';
                 toggleBtn.onclick = (e) => {
-                    toggleFilterChapterExpansion(chapterKey, e);
-                };
-                
-                // Title element
-                const titleSpan = document.createElement('span');
-                titleSpan.style.flex = '1';
-                titleSpan.style.fontWeight = '500';
-                titleSpan.textContent = `Ch ${group.chapterNumber}: ${group.chapterName}`;
-                titleSpan.onclick = (e) => {
                     e.stopPropagation();
-                    setHierarchicalFilter('chapter', chapterKey);
+                    filterChapterExpansionState[chapterKey] = !isExpanded;
+                    populateHierarchicalFilter();
                 };
                 
-                chapterContent.appendChild(toggleBtn);
-                chapterContent.appendChild(titleSpan);
-                chapterRow.appendChild(chapterContent);
-                container.appendChild(chapterRow);
+                // Chapter Checkbox & Label
+                const label = document.createElement('label');
+                label.className = 'filter-checkbox-label';
                 
-                // Topic Rows (if expanded)
-                if (isExpanded) {
-                    for (const topic of group.subtopics || []) {
-                        const isTopicActive = activeFilterType === 'topic' && activeFilterValue === topic.id;
-                        const topicEl = document.createElement('div');
-                        topicEl.className = `hierarchy-item hierarchy-topic ${isTopicActive ? 'active' : ''}`;
-                        topicEl.textContent = topic.name;
-                        topicEl.onclick = () => {
-                            setHierarchicalFilter('topic', topic.id);
-                        };
-                        container.appendChild(topicEl);
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = isAllSelected;
+                checkbox.indeterminate = isSomeSelected;
+                checkbox.onclick = (e) => {
+                    e.stopPropagation();
+                };
+                checkbox.onchange = (e) => {
+                    activeFilterType = 'all';
+                    activeFilterValue = null;
+                    selectedChapterKey = null;
+                    const checked = e.target.checked;
+                    for (const id of subtopicIds) {
+                        if (checked) {
+                            selectedTopicIds.add(id);
+                        } else {
+                            selectedTopicIds.delete(id);
+                        }
                     }
+                    updateTopicFilterCount();
+                    renderGrid();
+                    populateHierarchicalFilter();
+                    renderTopics();
+                };
+                
+                const textSpan = document.createElement('span');
+                textSpan.textContent = `Ch ${group.chapterNumber}: ${group.chapterName}`;
+                
+                label.appendChild(checkbox);
+                label.appendChild(textSpan);
+                
+                chapterRow.appendChild(toggleBtn);
+                chapterRow.appendChild(label);
+                filterContainer.appendChild(chapterRow);
+                
+                // Subtopics List
+                if (isExpanded) {
+                    const subtopicList = document.createElement('div');
+                    subtopicList.className = 'filter-topic-list';
+                    
+                    for (const topic of subtopics) {
+                        const topicRow = document.createElement('div');
+                        topicRow.className = 'filter-topic-item';
+                        
+                        const topicLabel = document.createElement('label');
+                        topicLabel.className = 'filter-checkbox-label';
+                        
+                        const topicCheckbox = document.createElement('input');
+                        topicCheckbox.type = 'checkbox';
+                        topicCheckbox.checked = selectedTopicIds.has(topic.id);
+                        topicCheckbox.onclick = (e) => {
+                            e.stopPropagation();
+                        };
+                        topicCheckbox.onchange = (e) => {
+                            activeFilterType = 'all';
+                            activeFilterValue = null;
+                            selectedChapterKey = null;
+                            const checked = e.target.checked;
+                            if (checked) {
+                                selectedTopicIds.add(topic.id);
+                            } else {
+                                selectedTopicIds.delete(topic.id);
+                            }
+                            updateTopicFilterCount();
+                            renderGrid();
+                            populateHierarchicalFilter();
+                            renderTopics();
+                        };
+                        
+                        const topicText = document.createElement('span');
+                        topicText.textContent = topic.name;
+                        
+                        topicLabel.appendChild(topicCheckbox);
+                        topicLabel.appendChild(topicText);
+                        topicRow.appendChild(topicLabel);
+                        subtopicList.appendChild(topicRow);
+                    }
+                    
+                    filterContainer.appendChild(subtopicList);
                 }
             }
+            
+            container.appendChild(filterContainer);
+            updateTopicFilterCount();
+        }
+
+        function updateTopicFilterCount() {
+            updateFilterButtonUI();
         }
 
         function selectChapter(chapterKey) {
@@ -1626,6 +1700,7 @@
                 activeFilterType = 'chapter';
                 activeFilterValue = selectedChapterKey;
                 filterChapterExpansionState[selectedChapterKey] = true;
+                chapterExpansionState[selectedChapterKey] = true;
             } else {
                 activeFilterType = 'all';
                 activeFilterValue = null;
@@ -3155,7 +3230,46 @@
         //  INIT
         // ════════════════════════════════════════════════════════════════
 
+        // Initialize collapse/expand for Topics from API
+        function initTopicsPanel() {
+            const panel = document.getElementById('topicsPanel');
+            const header = document.getElementById('topicsPanelHeader');
+            const toggleIcon = document.getElementById('topicsPanelToggleIcon');
+            const status = document.getElementById('topicsStatus');
+            const content = document.getElementById('topicsContent');
+            
+            if (!panel || !header || !toggleIcon || !status || !content) return;
+            
+            // Default to collapsed ('false') if not set
+            let expanded = sessionStorage.getItem('topicsPanelExpanded');
+            if (expanded === null) {
+                expanded = 'false';
+            }
+            
+            const updateUIState = (isExpanded) => {
+                if (isExpanded) {
+                    status.style.display = 'block';
+                    content.style.display = 'grid';
+                    toggleIcon.textContent = '▾';
+                } else {
+                    status.style.display = 'none';
+                    content.style.display = 'none';
+                    toggleIcon.textContent = '▸';
+                }
+            };
+            
+            updateUIState(expanded === 'true');
+            
+            header.onclick = () => {
+                let current = sessionStorage.getItem('topicsPanelExpanded') === 'true';
+                let next = !current;
+                sessionStorage.setItem('topicsPanelExpanded', next.toString());
+                updateUIState(next);
+            };
+        }
+
         loadData();
+        initTopicsPanel();
 
         // If Supabase config exists, test connection on load
         const config = getSupabaseConfig();
