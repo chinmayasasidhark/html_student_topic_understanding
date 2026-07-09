@@ -272,11 +272,11 @@
             background: #fff;
             border: 1px solid #e9edf2;
             border-radius: 16px;
-            padding: 12px 16px;
+            padding: 8px 12px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             z-index: 100;
-            min-width: 280px;
-            max-width: 400px;
+            min-width: 320px;
+            max-width: 420px;
             max-height: 400px;
             overflow-y: auto;
             display: none;
@@ -1124,60 +1124,64 @@
         .filter-chapter-container {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 2px;
         }
         .filter-chapter-row {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 13px;
+            gap: 4px;
+            font-size: 12.5px;
             color: #1e293b;
             font-weight: 600;
-            padding: 3px 0;
+            padding: 2px 0;
         }
         .filter-chapter-toggle {
             background: transparent;
             border: none;
             color: #64748b;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 10px;
             border-radius: 4px;
             transition: background 0.15s;
+            flex-shrink: 0;
         }
         .filter-chapter-toggle:hover {
-            background: #f1f5f9;
+            background: #e2e8f0;
             color: #0f172a;
         }
         .filter-checkbox-label {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
             user-select: none;
             flex: 1;
         }
         .filter-checkbox-label input[type="checkbox"] {
-            width: 15px;
-            height: 15px;
+            width: 14px;
+            height: 14px;
             cursor: pointer;
+            margin: 0;
         }
         .filter-topic-list {
             display: flex;
             flex-direction: column;
-            gap: 4px;
-            padding-left: 26px;
-            margin-bottom: 6px;
+            gap: 2px;
+            padding-left: 18px;
+            margin-bottom: 2px;
+            border-left: 1px dashed #cbd5e1;
+            margin-left: 7px;
         }
         .filter-topic-item {
             display: flex;
             align-items: center;
-            padding: 2px 0;
-            font-size: 12.5px;
+            padding: 1px 0 1px 4px;
+            font-size: 12px;
             color: #475569;
         }
     </style>
@@ -1248,6 +1252,14 @@
                 </div>
             </div>
             <div class="group" style="margin-left:auto;">
+                <select id="selectGrade" onchange="changeGradeSubject()">
+                    <option value="10">Grade 10</option>
+                    <option value="9">Grade 9</option>
+                </select>
+                <select id="selectSubject" onchange="changeGradeSubject()">
+                    <option value="math">Math</option>
+                    <option value="science">Science</option>
+                </select>
                 <button class="btn btn-primary btn-sm" id="fetchTopicsBtn" onclick="fetchTopics()">🔄 Fetch Topics</button>
                 <button class="btn btn-outline btn-sm" onclick="showTopicStats()">📊 Topic Stats</button>
                 <button class="btn btn-outline btn-sm" onclick="showClassStats()">🏫 Class Stats</button>
@@ -1350,16 +1362,19 @@
 
         const STORAGE_KEY = 'studentProgressData';
         const CONFIG_KEY = 'supabaseConfig';
-        const GRADE = '10';
-        const SUBJECT = 'math';
-        const SUBJECT_LABEL = SUBJECT.charAt(0).toUpperCase() + SUBJECT.slice(1);
-        const TOPICS_STORAGE_KEY = `topics_${GRADE}_${SUBJECT}`;
-        const TOPICS_API_URL = `https://staticapis.pragament.com/lms/cbse/${GRADE}/${SUBJECT}/topics.json`;
+        function getTopicsApiUrl(grade, subject) {
+            return `https://staticapis.pragament.com/lms/cbse/${grade}/${subject}/topics.json`;
+        }
+        function getTopicsStorageKey(grade, subject) {
+            return `topics_${grade}_${subject}`;
+        }
 
         let state = {
             students: [], // [{id, admissionNumber, class, section, name, progress: {topicId: 'understood'|'needs-help'}}]
             topics: [],
             topicGroups: [],
+            selectedGrade: localStorage.getItem('selectedGrade') || '10',
+            selectedSubject: localStorage.getItem('selectedSubject') || 'math'
         };
 
         let lastDeletedStudent = null;
@@ -1381,7 +1396,7 @@
             return [];
         }
 
-        function buildTopicGroups(rawTopics) {
+        function buildTopicGroups(rawTopics, subjectLabel) {
             const items = getTopicPayload(rawTopics);
             const grouped = [];
             const chapterMap = new Map();
@@ -1409,7 +1424,7 @@
                 group.subtopics.push({
                     id: topicId,
                     name: subtopic,
-                    subject: SUBJECT_LABEL,
+                    subject: subjectLabel,
                     chapterNumber,
                     chapterName,
                 });
@@ -1418,8 +1433,8 @@
             return grouped;
         }
 
-        function normalizeTopics(rawTopics) {
-            const grouped = buildTopicGroups(rawTopics);
+        function normalizeTopics(rawTopics, subjectLabel) {
+            const grouped = buildTopicGroups(rawTopics, subjectLabel);
             const topics = grouped.flatMap(group => group.subtopics);
             return { grouped, topics };
         }
@@ -1430,12 +1445,14 @@
         }
 
         function saveToLocalStorage(payload) {
-            localStorage.setItem(TOPICS_STORAGE_KEY, JSON.stringify(payload));
+            const key = getTopicsStorageKey(state.selectedGrade, state.selectedSubject);
+            localStorage.setItem(key, JSON.stringify(payload));
         }
 
         function loadFromLocalStorage() {
             try {
-                const raw = localStorage.getItem(TOPICS_STORAGE_KEY);
+                const key = getTopicsStorageKey(state.selectedGrade, state.selectedSubject);
+                const raw = localStorage.getItem(key);
                 if (!raw) return null;
                 return JSON.parse(raw);
             } catch (_) {
@@ -1451,7 +1468,8 @@
             }
 
             try {
-                const response = await fetch(TOPICS_API_URL);
+                const url = getTopicsApiUrl(state.selectedGrade, state.selectedSubject);
+                const response = await fetch(url);
                 if (!response.ok) throw new Error(`Request failed with ${response.status}`);
                 const payload = await response.json();
                 saveToLocalStorage(payload);
@@ -1469,7 +1487,8 @@
         }
 
         function applyTopics(payload) {
-            const { grouped, topics } = normalizeTopics(payload);
+            const subjectLabel = state.selectedSubject.charAt(0).toUpperCase() + state.selectedSubject.slice(1);
+            const { grouped, topics } = normalizeTopics(payload, subjectLabel);
             state.topics = topics;
             state.topicGroups = grouped;
             ensureAllProgress();
@@ -1801,7 +1820,8 @@
                 ? state.topicGroups
                 : (state.topics.length > 0 ? [{ chapterNumber: 0, chapterName: 'Topics', subtopics: state.topics }] : []);
 
-            sourceEl.textContent = `Grade ${GRADE} · ${SUBJECT_LABEL}`;
+            const subjectLabel = state.selectedSubject.charAt(0).toUpperCase() + state.selectedSubject.slice(1);
+            sourceEl.textContent = `Grade ${state.selectedGrade} · ${subjectLabel}`;
 
             if (!groups.length) {
                 container.innerHTML = `
@@ -1874,10 +1894,41 @@
             state.topics = [];
             state.topicGroups = [];
 
+            // Set dynamic select values from state
+            const selectGrade = document.getElementById('selectGrade');
+            const selectSubject = document.getElementById('selectSubject');
+            if (selectGrade && selectSubject) {
+                selectGrade.value = state.selectedGrade;
+                selectSubject.value = state.selectedSubject;
+            }
+
             const cachedTopics = loadFromLocalStorage();
             if (cachedTopics) {
                 applyTopics(cachedTopics);
             } else {
+                ensureAllProgress();
+                renderTopics();
+                renderGrid();
+                populateFilters();
+                updateStats();
+            }
+        }
+
+        function changeGradeSubject() {
+            const grade = document.getElementById('selectGrade').value;
+            const subject = document.getElementById('selectSubject').value;
+            state.selectedGrade = grade;
+            state.selectedSubject = subject;
+            localStorage.setItem('selectedGrade', grade);
+            localStorage.setItem('selectedSubject', subject);
+
+            const cachedTopics = loadFromLocalStorage();
+            if (cachedTopics) {
+                applyTopics(cachedTopics);
+            } else {
+                state.topics = [];
+                state.topicGroups = [];
+                selectedTopicIds.clear();
                 ensureAllProgress();
                 renderTopics();
                 renderGrid();
